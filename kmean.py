@@ -12,7 +12,7 @@ import scipy.cluster.vq as vq
 
 class KMean:
     def __init__(self):
-        self.MAX_ITERATIONS = 10
+        self.MAX_ITERATIONS = 4
         k = 3
         N = 200
         c, data = self.generateRandomInstances(N, k)
@@ -30,11 +30,14 @@ class KMean:
         print("Initial Iris Data Set (Note, for drawing simplicity we considered the first 2 features 'sepal length and sepal width) loaded")
         
         print("Iris Dataset after running k-means Algorithm k=3 with Euclidean Distance set:")        
-        self.plotData(self.kmeans(irisData, k)[:,:2], irisData[:,:2])        
+        #self.plotData(self.kmeans(irisData, k)[:,:2], irisData[:,:2])  
+        self.kmeans(irisData, k, plotIterations=True)
+        
         
         
         print("Iris Dataset after running k-means Algorithm k=3 with Distance function set:")        
-        self.plotData(self.kmeans(irisData, k, True)[:,:2], irisData[:,:2])        
+        #self.plotData(self.kmeans(irisData, k, True)[:,:2], irisData[:,:2]) 
+        self.kmeans(irisData, k, plotIterations=True, d=True)
     
         
     def plotData(self, c, tests):
@@ -77,7 +80,7 @@ class KMean:
 
     # K-Means is an algorithm that takes in a dataset and a constant
     # k and returns k centroids    
-    def kmeans(self, data, k, d=False):
+    def kmeans(self, data, k, d=False, plotIterations=False):
         # Initialize centroids randomly
         centroids = data[np.random.choice(range(data.shape[0]),k,replace=False),:]
         
@@ -92,19 +95,25 @@ class KMean:
                 
             if(d == False):
                 #Distance not set, calculate the Euclidean Distance
-                euclideanDistance = np.sqrt(np.sum((centroids[:,np.newaxis,:]-data)**2, axis=2))
+                distance = np.sqrt(np.sum((centroids[:,np.newaxis,:]-data)**2, axis=2))
             
             else :
                 #Distance is set, use the provided deistance instead which is different from Euclidean Distance
-                euclideanDistance = np.sum((centroids[:,np.newaxis,:]-data)**2, axis=2)
+                distance = np.sum((centroids[:,np.newaxis,:]-data)**2, axis=2)
                         
             
             #Find the closest instance to the center E-Step
-            closest = np.argmin(euclideanDistance, axis=0)
+            closest = np.argmin(distance, axis=0)
             
             #Update the clusetr center M-Step
             for i in range(k):
                 centroids[i,:] = data[closest==i, :].mean(axis=0)
+                
+                
+            #Plot iterations if set to true
+            if(plotIterations == True):
+                print("Iteration", iterations)
+                self.plotData(centroids[:,:2], data[:,:2])
                 
         
         return centroids
@@ -115,8 +124,8 @@ class KMean:
     # because it has run a maximum number of iterations OR the centroids
     # stop changing.    
     def shouldStop(self, oldCentroids, centroids, iterations):
-        if iterations > self.MAX_ITERATIONS: return True
-        return np.array_equal(oldCentroids, centroids)
+        if iterations > self.MAX_ITERATIONS: return True 
+        else: return False
         
         
         
