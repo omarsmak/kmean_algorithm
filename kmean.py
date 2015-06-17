@@ -18,13 +18,13 @@ class KMean:
         c, data = self.generateRandomInstances(N, k)
         
         print("Initial Data N=100, k=3:")
-        self.plotData(c, data)
+        self.plotData(c, data, 'Initial Data N=100, k=3')
         
         print("After running k-means Algorithm N=100, k=3 with Euclidean Distance set:")
-        self.plotData(self.kmeans(data, k), data)
+        self.plotData(self.kmeans(data, k), data, 'K-Means with Euclidean Distance')
         
         print("After running k-means Algorithm N=100, k=3 with Distance function set:")
-        self.plotData(self.kmeans(data, k, True), data)
+        self.plotData(self.kmeans(data, k, True), data, 'K-Means with Different Distance')
         
         irisData = self.loadData("iris.data")
         print("Initial Iris Data Set (Note, for drawing simplicity we considered the first 2 features 'sepal length and sepal width) loaded")
@@ -40,12 +40,13 @@ class KMean:
         self.kmeans(irisData, k, plotIterations=True, d=True)
     
         
-    def plotData(self, c, tests):
+    def plotData(self, c, tests, label=""):
         #Plot data to 2D scartter
         #use vq() to assign each sample to a cluster
         assignment,cdist = vq.vq(tests,c)
         plt.scatter(tests[:,0], tests[:,1], c=assignment)
         plt.scatter(c[:,0], c[:,1],s=80, marker='v', c='red')
+        plt.title(label)
         plt.show()
         
         
@@ -112,8 +113,7 @@ class KMean:
                 
             #Plot iterations if set to true
             if(plotIterations == True):
-                print("Iteration", iterations)
-                self.plotData(centroids[:,:2], data[:,:2])
+                self.plotData(centroids[:,:2], data[:,:2], 'Iteration'+str(iterations))
                 
         
         return centroids
